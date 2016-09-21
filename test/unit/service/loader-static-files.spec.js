@@ -21,6 +21,7 @@ describe('pascalprecht.translate', function () {
       $translationCache = _$translationCache_;
 
       $httpBackend.when('GET', 'lang_de_DE.json').respond({HEADER: 'Ueberschrift'});
+      $httpBackend.when('GET', 'lang_de_DE.123.json').respond({HEADER: 'Ueberschrift'});
       $httpBackend.when('GET', 'lang_en_US.json').respond({HEADER:'Header'});
       $httpBackend.when('GET', 'lang_nt_VD.json').respond(404);
     }));
@@ -85,6 +86,19 @@ describe('pascalprecht.translate', function () {
       });
       $httpBackend.flush();
       expect($translationCache.info().size).toEqual(1);
+    });
+
+    it('should fetch static files from fileMap when invoking', function () {
+      $httpBackend.expectGET('lang_de_DE.123.json');
+      $translateStaticFilesLoader({
+        key: 'de_DE',
+        prefix: 'lang_',
+        suffix: '.json',
+        fileMap: {
+          'lang_de_DE.json' : 'lang_de_DE.123.json'
+        }
+      });
+      $httpBackend.flush();
     });
   });
 
